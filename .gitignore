@@ -1,3 +1,17 @@
+#files to be ignored in front side angular6
+/Front/ChatFront/node_modules
+/Front/ChatFront/e2e
+/Front/ChatFront/.editorconfig
+/Front/ChatFront/package-lock.json
+/Front/ChatFront/README.md
+/Front/ChatFront/tsconfig.json
+/Front/ChatFront/tslint.json
+
+#files to be ignored in back side nodejs
+
+
+
+
 # Logs
 logs
 *.log
@@ -59,3 +73,9 @@ typings/
 
 # next.js build output
 .next
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless
