@@ -1,41 +1,41 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+//////////////// start Dependencies ////////////////////////
+const express = require('express'),
+  logger = require('morgan'),
+  http = require('http'),
+  socketIo = require('socket.io'),
+  config = require('./config'),
+  indexRouter = require('./routes/index'),
+  usersRouter = require('./routes/users');
+//////////////// end Dependencies ///////////////////////
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+/////////////// start instantiation /////////////////////
+const app = express(),
+  server = http.createServer(app)
+  io=socketIo(server);
+/////////////// end instantiation ///////////////////////
 
-var app = express();
-
-// view engine setup
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'jade');
-
+/////////////// start middlewares ///////////////////////
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+/////////////// end middlewares /////////////////////////
 
+/////////////// start routes ////////////////////////////
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+/////////////// end routes //////////////////////////////
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+///// start server and web socket configurations ////////
+server.listen(config.server.port, () => {
+  console.log('Running server on port %s',config.server.port);
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+io.on('connect', (socket) => {
+  socket.on('message', (m) => {
+      console.log('[server](message): %s', JSON.stringify(m));
+      io.emit('message', m);
+  });
 });
 
+///// end server and web socket configurations //////////
 module.exports = app;
