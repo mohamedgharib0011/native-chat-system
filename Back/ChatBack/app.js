@@ -4,7 +4,9 @@ const express = require('express'),
   http = require('http'),
   socketIo = require('socket.io'),
   config = require('./config'),
+  dbConnection = require('./models/db'),
   indexRouter = require('./routes/index'),
+  chatRouter = require('./routes/chat'),
   usersRouter = require('./routes/users');
 //////////////// end Dependencies ///////////////////////
 
@@ -23,6 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 /////////////// start routes ////////////////////////////
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/chat', chatRouter);
 /////////////// end routes //////////////////////////////
 
 ///// start server and web socket configurations ////////
