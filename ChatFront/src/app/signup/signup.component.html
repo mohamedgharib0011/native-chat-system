@@ -1,12 +1,43 @@
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
 
 <div class="login">
-	<h1>Sign Up</h1>
-    <form method="post">
-    	<input type="text" name="u" placeholder="Username" required="required" />
-        <input type="password" name="p" placeholder="Password" required="required" />
-        <button type="submit" class="btn btn-primary btn-block btn-large">Let me in.</button>
-    </form>
+  <h1>Sign Up</h1>
+  <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+    <input type="text" placeholder="E-mail" formControlName="email" />
+    <input type="text" placeholder="Username" formControlName="username" />
+    <input type="password" placeholder="Password" formControlName="password" />
+
+    <select formControlName="language">
+      <option value="English" selected="selected">English</option>
+      <option value="French">French</option>
+      <option value="Arabic">Arabic</option>
+    </select>
+
+
+    <br />
+    <br />
+    <br />
+
+    <button type="submit" class="btn btn-primary btn-block btn-large">Let me in.</button>
+
+    <br />
+    <div *ngIf="submitted && !myForm.valid">
+      Please, Check the following:
+    </div>
+
+    <!-- validation -->
+    <div class="validation" *ngIf="submitted && !myForm.controls['email'].valid">
+      Enter Valid E-mail
+    </div>
+
+    <div class="validation" *ngIf="submitted && !myForm.controls['username'].valid">
+      Enter Username
+    </div>
+
+    <div class="validation" *ngIf="submitted && !myForm.controls['password'].valid">
+      Enter Password
+    </div>
+
+  </form>
 </div>
