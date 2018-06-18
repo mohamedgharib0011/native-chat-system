@@ -11,16 +11,28 @@ const express = require('express'),
   usersRouter = require('./routes/users');
 //////////////// end Dependencies ///////////////////////
 
+
+
 /////////////// start instantiation /////////////////////
 const app = express(),
   server = http.createServer(app)
 io = socketIo(server);
 /////////////// end instantiation ///////////////////////
 
+//////////////// start CORS  ///////////////////////
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, *, Content-Type, Accept");
+  next();
+});
+//////////////// end CORS  ///////////////////////
+
 /////////////// start middlewares ///////////////////////
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({
+  extended: false
+}));
 
 app.use('/api', tokenvalidation);
 
@@ -43,6 +55,10 @@ io.on('connect', (socket) => {
     io.emit('message', m);
   });
 });
+
+
+
+
 
 ///// end server and web socket configurations //////////
 module.exports = app;
