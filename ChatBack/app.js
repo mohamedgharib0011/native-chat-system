@@ -5,6 +5,7 @@ const express = require('express'),
   socketIo = require('socket.io'),
   config = require('./config'),
   dbConnection = require('./models/db'),
+  tokenvalidation = require('./middlewares/tokenvalidation'),
   indexRouter = require('./routes/index'),
   chatRouter = require('./routes/chat'),
   usersRouter = require('./routes/users');
@@ -20,12 +21,15 @@ io = socketIo(server);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use('/api', tokenvalidation);
+
 /////////////// end middlewares /////////////////////////
 
 /////////////// start routes ////////////////////////////
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/chat', chatRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/chats', chatRouter);
 /////////////// end routes //////////////////////////////
 
 ///// start server and web socket configurations ////////
