@@ -2,6 +2,7 @@
  * @Author: mgharib 
  * @Date: 2018-06-17 22:48:30 
  * @Last Modified time: 2018-06-17 22:48:30 
+ * 
  */
 
 const express = require('express'),
@@ -23,8 +24,8 @@ router.get('/', function (req, res, next) {
  * @author: mgharib
  */
 router.post('/search', function (req, res, next) {
-  console.log("******** "+req.body.searchText);
-  
+  console.log("******** " + req.body.searchText);
+
   User.find({ $text: { $search: req.body.searchText } }, { score: { $meta: "textScore" } })
     .sort({ score: { $meta: 'textScore' } })
     .exec((err, users) => {
@@ -32,14 +33,6 @@ router.post('/search', function (req, res, next) {
     });
 });
 
-/**
- * create new user
- * @author:mgharib
- */
-router.post('/', function (req, res, next) {
-  new User(req.body).save((err, data) => {
-    res.status(201).json(data);
-  });
-});
+
 
 module.exports = router;
