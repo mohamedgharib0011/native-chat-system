@@ -13,7 +13,7 @@ const express = require('express'),
 /////////////// start instantiation /////////////////////
 const app = express(),
   server = http.createServer(app)
-  io=socketIo(server);
+io = socketIo(server);
 /////////////// end instantiation ///////////////////////
 
 /////////////// start middlewares ///////////////////////
@@ -30,13 +30,13 @@ app.use('/chat', chatRouter);
 
 ///// start server and web socket configurations ////////
 server.listen(config.server.port, () => {
-  console.log('Running server on port %s',config.server.port);
+  console.log('Running server on port %s', config.server.port);
 });
 
 io.on('connect', (socket) => {
   socket.on('message', (m) => {
-      console.log('[server](message): %s', JSON.stringify(m));
-      io.emit('message', m);
+    console.log('[server](message): %s', JSON.stringify(m));
+    io.emit('message', m);
   });
 });
 
