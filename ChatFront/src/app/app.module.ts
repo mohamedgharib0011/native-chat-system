@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
 // use ReactiveFormsModule Only when using Data Driven Forms
 import { ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +18,7 @@ import { myRoutes } from './app-routes';
 // services section
 import { LoginService } from './Services/login/login.service';
 import { SignupService } from './Services/signup/signup.service';
+import { TokenInterceptor } from './interceptors/token.interceptor';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,11 @@ import { SignupService } from './Services/signup/signup.service';
     HttpClientModule,
     HttpModule
   ],
-  providers: [LoginService, SignupService],
+  providers: [LoginService, SignupService, {
+    provide: HTTP_INTERCEPTORS,
+    useClass: TokenInterceptor,
+    multi: true
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

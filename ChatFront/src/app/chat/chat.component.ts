@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { Title } from '@angular/platform-browser';
+import { ChatService } from '../Services/chat/chat.service';
 
 @Component({
   selector: 'app-chat',
@@ -8,9 +9,13 @@ import { Title } from '@angular/platform-browser';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
-
-  constructor(private titleService: Title) {
+  searchText: String;
+  constructor(private titleService: Title, private chatService: ChatService) {
     this.titleService.setTitle("Chat");
+    this.chatService.searchUsers(this.searchText).subscribe((x) => {
+
+    })
+
   }
 
   ngOnInit() {
