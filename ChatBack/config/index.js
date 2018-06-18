@@ -13,6 +13,6 @@ module.exports = {
     db: {
         url: "mongodb://localhost/babble"
     },
-    secret: 'ilovescotchyscotch'
+    secret: 'MENAMOHAMEDsecretCODES!@#!@3'
 
 }
