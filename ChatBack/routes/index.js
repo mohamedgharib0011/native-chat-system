@@ -60,8 +60,7 @@ router.post('/authenticate', (req, res, next) => {
  */
 router.post('/signup', function (req, res, next) {
   new User(req.body).save((err, data) => {
-    console.log(err);
-
+    //console.log(err);
     res.status(201).json(data);
   });
 });

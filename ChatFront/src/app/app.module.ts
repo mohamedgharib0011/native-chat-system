@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
-
+import { HttpModule } from '@angular/http';
 // use ReactiveFormsModule Only when using Data Driven Forms
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
@@ -31,7 +31,8 @@ import { SignupService } from './Services/signup/signup.service';
     myRoutes,
     ReactiveFormsModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    HttpModule
   ],
   providers: [LoginService, SignupService],
   bootstrap: [AppComponent]

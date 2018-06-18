@@ -8,6 +8,7 @@ import {
   MinLengthValidator
 } from '@angular/forms';
 
+//import { Observable } from 'rxjs';
 import { SignupService } from '../Services/signup/signup.service';
 import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
@@ -26,6 +27,7 @@ export class SignupComponent implements OnInit {
   password: string = "";
   language: string = "English";
   submitted = false;
+  serverError = false;
 
   //, private gdata: GetdataService
   constructor(private formBuilder: FormBuilder, private signupSer: SignupService, private router: Router, private titleService: Title) {
@@ -42,7 +44,7 @@ export class SignupComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
 
-    if (this.myForm.valid {
+    if (this.myForm.valid) {
       // read form values
       this.email = this.myForm.controls['email'].value;
       this.username = this.myForm.controls['username'].value;
@@ -50,10 +52,19 @@ export class SignupComponent implements OnInit {
       this.language = this.myForm.controls['language'].value;
 
       // save to database
-      // todo
+      this.signupSer.InsertUser(this.email, this.username, this.password, this.language).subscribe(res => {
+        if (res == null) {
+          // error happened
+          this.serverError = true;
+        }
+        else {
+          console.log(res['_id']);
+          // redirect
+          this.onSuccess();
+        }
+      });
 
-      // redirect
-      this.onSuccess();
+
     }
     else {
 

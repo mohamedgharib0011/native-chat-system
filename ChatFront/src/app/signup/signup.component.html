@@ -38,6 +38,10 @@
     <div class="validation" *ngIf="submitted && !myForm.controls['password'].valid">
       Enter Password
     </div>
+    
+    <div class="validation" *ngIf="serverError">
+      This mail already Exists
+    </div>
 
   </form>
 </div>

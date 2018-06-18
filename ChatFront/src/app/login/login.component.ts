@@ -21,7 +21,6 @@ import { Title } from '@angular/platform-browser';
 export class LoginComponent implements OnInit {
   myForm: FormGroup;
   email: string = "";
-  username: string = "";
   password: string = "";
   submitted = false;
 
@@ -29,7 +28,6 @@ export class LoginComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private loginSer: LoginService, private router: Router, private titleService: Title) {
     this.myForm = formBuilder.group({
       'email': ['', [Validators.required]],
-      //'username': ['', [Validators.required]],
       'password': ['', [Validators.required]]
     });
 
@@ -42,10 +40,9 @@ export class LoginComponent implements OnInit {
 
     // read form values
     this.email = this.myForm.controls['email'].value;
-    this.username = this.myForm.controls['username'].value;
     this.password = this.myForm.controls['password'].value;
-   
-    if (this.myForm.valid {
+
+    if (this.myForm.valid) {
       this.onSuccess();
     }
     else {
