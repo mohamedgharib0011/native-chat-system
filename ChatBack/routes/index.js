@@ -14,7 +14,9 @@ const express = require('express'),
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-  res.render('index', { title: 'Express' });
+  res.render('index', {
+    title: 'Express'
+  });
 });
 
 
@@ -23,7 +25,10 @@ router.get('/', function (req, res, next) {
  * authenticate the user and return token in case of valid credentials
  */
 router.post('/authenticate', (req, res, next) => {
-  User.findOne({ email: req.body.email, password: req.body.password }, (err, user) => {
+  User.findOne({
+    email: req.body.email,
+    password: req.body.password
+  }, (err, user) => {
     console.log("******* user: " + user);
 
     if (user) {
@@ -35,16 +40,17 @@ router.post('/authenticate', (req, res, next) => {
       const token = jwt.sign(payload, config.secret, {
         expiresIn: 86400 // expires in 24 hours
       });
+
       // return the information including token as JSON
-      res.json({
+      res.status(200).json({
         success: true,
         message: 'Enjoy your token!',
         token: token
       });
 
     } else {
-      res.status(404).json({
-        success: true,
+      res.json({
+        success: false,
         message: "No user found."
       });
     }
@@ -61,7 +67,27 @@ router.post('/authenticate', (req, res, next) => {
 router.post('/signup', function (req, res, next) {
   new User(req.body).save((err, data) => {
     //console.log(err);
-    res.status(201).json(data);
+    if (data) {
+      const payload = {
+        userId: data._id,
+        admin: data.admin
+      }
+      // console.log("******* payload: " + payload.userId);
+      const token = jwt.sign(payload, config.secret, {
+        expiresIn: 86400 // expires in 24 hours
+      });
+      // return the information including token as JSON
+      res.status(200).json({
+        success: true,
+        message: 'Enjoy your token!',
+        token: token
+      });
+    } else {
+      res.json({
+        success: false
+      });
+    }
+    //res.status(201).json(data);
   });
 });
 

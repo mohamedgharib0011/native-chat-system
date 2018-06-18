@@ -5,7 +5,6 @@
   <h1>Login</h1>
   <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
     <input type="text" placeholder="E-mail" formControlName="email" />
-    <!-- <input type="text" placeholder="Username" formControlName="username" /> -->
     <input type="password" placeholder="Password" formControlName="password" />
 
     <button type="submit" class="btn btn-primary btn-block btn-large">Let me in.</button>
@@ -20,12 +19,12 @@
       Enter Valid E-mail
     </div>
 
-    <!-- <div class="validation" *ngIf="submitted && !myForm.controls['username'].valid">
-      Enter Username
-    </div> -->
-
     <div class="validation" *ngIf="submitted && !myForm.controls['password'].valid">
       Enter Password
+    </div>
+
+    <div class="validation" *ngIf="serverError">
+      E-mail or password may be wrong. check them again
     </div>
 
   </form>

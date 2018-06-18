@@ -18,8 +18,6 @@ export class SignupService {
   constructor(public http: HttpClient) { }
 
   InsertUser(email: string, username: string, password: string, language: string) {
-    console.log(email, username, password, language);
-
     return this.http.post("http://localhost:3000/signup",
       { 'email': email, 'username': username, 'password': password, 'pref_lang': language },
       httpOptions);
