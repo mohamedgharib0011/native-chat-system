@@ -40,6 +40,12 @@
 /** IE10 and IE11 requires the following for the Reflect API. */
 // import 'core-js/es6/reflect';
 
+/** 
+ * @author:mgharib
+ * This line for using socketIO with angular 6 according to the following github repo: 
+ * https://github.com/rodgc/ngx-socket-io 
+ */
+(window as any).global = window;
 
 /** Evergreen browsers require these. **/
 // Used for reflect-metadata in JIT. If you use AOT (and only Angular decorators), you can remove.

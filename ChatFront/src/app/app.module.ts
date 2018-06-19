@@ -8,17 +8,19 @@ import { FormsModule } from '@angular/forms';
 
 // componenets
 import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component';
-import { SignupComponent } from './signup/signup.component';
-import { ChatComponent } from './chat/chat.component';
+import { LoginComponent } from './components/login/login.component';
+import { SignupComponent } from './components/signup/signup.component';
+import { ChatComponent } from './components/chat/chat.component';
 
 // routes
 import { myRoutes } from './app-routes';
 
-// services section
-import { LoginService } from './Services/login/login.service';
-import { SignupService } from './Services/signup/signup.service';
+// interceptors
 import { TokenInterceptor } from './interceptors/token.interceptor';
+
+// services section
+import { LoginService } from './services/login.service';
+import { SignupService } from './services/signup.service';
 
 @NgModule({
   declarations: [
@@ -32,8 +34,7 @@ import { TokenInterceptor } from './interceptors/token.interceptor';
     myRoutes,
     ReactiveFormsModule,
     FormsModule,
-    HttpClientModule,
-    HttpModule
+    HttpClientModule
   ],
   providers: [LoginService, SignupService, {
     provide: HTTP_INTERCEPTORS,

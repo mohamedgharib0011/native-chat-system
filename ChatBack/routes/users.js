@@ -13,8 +13,9 @@ const express = require('express'),
  * list all users
  * @author: mgharib
  */
-router.get('/', function (req, res, next) {
-  User.find({}, (err, user) => {
+router.get('/allexceptcurrent', function (req, res, next) {
+  const currentUserId = req.currentUserInfo.userId;
+  User.find({_id:{$not:{$eq:currentUserId}}}, (err, user) => {
     res.json(user);
   });
 });

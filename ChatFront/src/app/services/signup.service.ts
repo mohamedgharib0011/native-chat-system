@@ -19,7 +19,7 @@ export class SignupService {
 
   InsertUser(email: string, username: string, password: string, language: string) {
     return this.http.post("http://localhost:3000/signup",
-      { 'email': email, 'username': username, 'password': password, 'pref_lang': language },
+      { 'email': email, 'name': username, 'password': password, 'pref_lang': language },
       httpOptions);
   }
 }

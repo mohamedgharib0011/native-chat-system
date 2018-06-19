@@ -33,10 +33,8 @@ module.exports = function(req, res, next){
     if (err)
       return res.json({ success: false, message: 'Failed to authenticate token.' });
 
-    // attach the decoded token so we can use without the need to hit db
-    req.token = decoded;
-
-    console.log(decoded);
+    // attach the payload as the current user info to be used instead of fetching from db
+    req.currentUserInfo = decoded;
 
     next();
   });

@@ -4,10 +4,12 @@ const express = require('express'),
   http = require('http'),
   socketIo = require('socket.io'),
   config = require('./config'),
+  cors = require('cors'),
   dbConnection = require('./models/db'),
-  tokenvalidation = require('./middlewares/tokenvalidation'),
+  tokenvalidation = require('./middlewares/token.validator.middleware.js'),
   indexRouter = require('./routes/index'),
   chatRouter = require('./routes/chat'),
+  ChatMessage = require('./models/chatMessage'),
   usersRouter = require('./routes/users');
 //////////////// end Dependencies ///////////////////////
 
@@ -19,21 +21,13 @@ const app = express(),
 io = socketIo(server);
 /////////////// end instantiation ///////////////////////
 
-//////////////// start CORS  ///////////////////////
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, *, Content-Type, Accept");
-  next();
-});
-//////////////// end CORS  ///////////////////////
-
 /////////////// start middlewares ///////////////////////
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({
   extended: false
 }));
-
+app.use(cors());
 app.use('/api', tokenvalidation);
 
 /////////////// end middlewares /////////////////////////
@@ -51,8 +45,10 @@ server.listen(config.server.port, () => {
 
 io.on('connect', (socket) => {
   socket.on('message', (m) => {
-    console.log('[server](message): %s', JSON.stringify(m));
-    io.emit('message', m);
+    ChatMessage.create(m, function (err, data) {
+      console.log("************ message created: " + data);
+      io.emit('message', m);
+    });
   });
 });
 

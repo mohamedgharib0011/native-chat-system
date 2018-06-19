@@ -3,7 +3,9 @@
  * @Date: 2018-06-19 01:04:17 
  * @Last Modified time: 2018-06-19 01:04:17 
  * 
- * for injecting the token for each request
+ * for injecting the token for each request, reference:
+ * https://medium.com/@ryanchenkie_40935/angular-authentication-using-the-http-client-and-http-interceptors-2f9d1540eb8
+ * 
  */
 
 
@@ -17,14 +19,13 @@ export class TokenInterceptor implements HttpInterceptor {
     constructor(public auth: AuthService) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<Boolean>> {
-        console.log("************** token: "+this.auth.getToken());
-        
-        req = req.clone({
+
+        const request = req.clone({
             setHeaders: {
-                Authorization: `Bearer ${this.auth.getToken()}`
+                Authorization:` Bearer ${this.auth.getToken()}`
             }
         });
-        return next.handle(req);
+        return next.handle(request);
     }
 
 }

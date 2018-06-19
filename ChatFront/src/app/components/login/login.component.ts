@@ -8,63 +8,51 @@ import {
   MinLengthValidator
 } from '@angular/forms';
 
-//import { Observable } from 'rxjs';
-import { SignupService } from '../Services/signup/signup.service';
+import { LoginService } from '../../services/login.service';
 import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import * as jwt_decode from 'jwt-decode';
 
 @Component({
-  selector: 'app-signup',
-  templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.css']
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
 })
-
-export class SignupComponent implements OnInit {
-
+export class LoginComponent implements OnInit {
   myForm: FormGroup;
-  emailPattern = '^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$';
   email: string = '';
-  username: string = '';
   password: string = '';
-  language: string = 'English';
   submitted = false;
   serverError = false;
   token: string;
 
-  //, private gdata: GetdataService
-  constructor(private formBuilder: FormBuilder, private signupSer: SignupService, private router: Router, private titleService: Title) {
+  constructor(private formBuilder: FormBuilder, private loginSer: LoginService, private router: Router, private titleService: Title) {
     this.myForm = formBuilder.group({
-      'email': ['', [Validators.required, Validators.pattern(this.emailPattern)]],
-      'username': ['', [Validators.required]],
-      'password': ['', [Validators.required]],
-      'language': ['English']
+      'email': ['', [Validators.required]],
+      'password': ['', [Validators.required]]
     });
-    this.titleService.setTitle('Sign up');
+
+    this.titleService.setTitle('Sign in');
 
     // check if token exists
     this.token = localStorage.getItem('token');
     if (!this.isTokenExpired(this.token)) {
+      console.log("not expired");
       this.onSuccess();
     }
   }
 
   onSubmit() {
     this.submitted = true;
-    this.serverError = false;
-
     if (this.myForm.valid) {
       // read form values
       this.email = this.myForm.controls['email'].value;
-      this.username = this.myForm.controls['username'].value;
       this.password = this.myForm.controls['password'].value;
-      this.language = this.myForm.controls['language'].value;
 
       // save to database
-      this.signupSer.InsertUser(this.email, this.username, this.password, this.language).subscribe(res => {
+      this.loginSer.authenticateUser(this.email, this.password).subscribe(res => {
         if (res['success']) {
           console.log(res['token']);
-
           // save token in Local Storage
           window.localStorage.setItem('token', res['token']);
           // redirect to chat
@@ -89,9 +77,9 @@ export class SignupComponent implements OnInit {
     this.router.navigate(['/chat']);
   }
 
-
   getTokenExpirationDate(token: string): Date {
     const decoded = jwt_decode(token);
+
     if (decoded.exp === undefined) { return null; }
 
     const date = new Date(0);
@@ -100,6 +88,7 @@ export class SignupComponent implements OnInit {
   }
 
   isTokenExpired(token?: string): boolean {
+
     if (!token) return true;
 
     const date = this.getTokenExpirationDate(token);

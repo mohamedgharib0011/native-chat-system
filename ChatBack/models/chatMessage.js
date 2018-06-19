@@ -7,8 +7,8 @@
 const mongoose = require('mongoose');
 
 const chatMessageSchema = new mongoose.Schema({
-    sender: Number,
-    receiver: Number,
+    sender: String,
+    receiver: String,
     origin_lang: String,
     date: Date,
     message: String

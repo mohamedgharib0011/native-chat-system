@@ -13,12 +13,15 @@ const express = require('express'),
  * get the conversation between the current user and passed user id
  */
 router.get('/conversation/:userId', function (req, res, next) {
-  const currentUserId = 1;
+  const currentUserId = req.currentUserInfo.userId;
+  console.log(currentUserId);
+  
+  
   ChatMessage.find({
     $or
       : [
-        { sender: { $in: [currentUserId, req.params.userId] } },
-        { reciever: { $in: [currentUserId, req.params.userId] } }
+        { sender:currentUserId , reciever:req.params.userId },
+        { reciever:currentUserId ,sender:req.params.userId }
       ]
   }
   )
@@ -32,11 +35,9 @@ router.get('/conversation/:userId', function (req, res, next) {
  * add new converstion (array of messages is expected)
  */
 router.post('/conversation', function (req, res, next) {
-  console.log("******************" + req.body);
-
   ChatMessage.create(req.body, function (err, data) {
     res.status(201).json(data);
-  })
+  });
 });
 
 module.exports = router;

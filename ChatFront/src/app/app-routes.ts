@@ -1,8 +1,9 @@
 import { RouterModule, Routes } from "@angular/router";
+import { ChatComponent } from "./components/chat/chat.component";
+import { SignupComponent } from "./components/signup/signup.component";
+import { LoginComponent } from "./components/login/login.component";
 
-import { ChatComponent } from './chat/chat.component';
-import { LoginComponent } from './login/login.component';
-import { SignupComponent } from './signup/signup.component';
+
 // import { DataDrivenComponent } from './data-driven/data-driven.component';
 
 const MY_ROUTES: Routes = [
