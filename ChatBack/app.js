@@ -10,6 +10,7 @@ const express = require('express'),
   indexRouter = require('./routes/index'),
   chatRouter = require('./routes/chat'),
   ChatMessage = require('./models/chatMessage'),
+  User = require('./models/user'),
   usersRouter = require('./routes/users');
 //////////////// end Dependencies ///////////////////////
 
@@ -44,11 +45,19 @@ server.listen(config.server.port, () => {
 });
 
 io.on('connect', (socket) => {
+  console.log("************ connection established: ");
+
   socket.on('message', (m) => {
     ChatMessage.create(m, function (err, data) {
-      console.log("************ message created: " + data);
       io.emit('message', m);
     });
+  });
+
+  socket.on('onlinestatus', (onlineStaus) => {
+    User.findOneAndUpdate({_id:onlineStaus.userId}, {online:onlineStaus.status},(error,user)=>{
+      console.log("************ new user connected: " + onlineStaus.userId);
+      io.emit('onlinestatus', onlineStaus);
+    })
   });
 });
 

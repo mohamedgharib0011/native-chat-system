@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 
 import { Title } from '@angular/platform-browser';
 import { ChatService } from '../../services/chat.service';
@@ -7,18 +7,24 @@ import { ChatMessage } from '../../models/chatMessage';
 import { AuthService } from '../../services/auth.service';
 import { filter } from 'rxjs/operators';
 import { SocketIOService } from '../../services/socketio.service';
+import { Event } from '../../models/event';
+import { isDefined } from '@angular/compiler/src/util';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
+  @ViewChild('scrollMe') private myScrollContainer: ElementRef;
   public searchText: String;
   public users;
   public conversation;
   public selectedUser;
-  private ioConnection;
+  private msgSub: Subscription;
+  private onlineuserSub: Subscription;
+  private offlineuserSub: Subscription;
   private currentUser;
   public messageContent: String;
 
@@ -27,10 +33,35 @@ export class ChatComponent implements OnInit {
     this.titleService.setTitle("Chat");
   }
 
+  /**
+   * @author mgharib
+   * Used for registering some logic after view check
+   */
+  ngAfterViewChecked() {
+    // used for setting the message history scroll all the way dowm 
+    //REF:https://stackoverflow.com/questions/35232731/angular2-scroll-to-bottom-chat-style/45367387
+    try {
+      this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   ngOnInit() {
     this.initIoConnection();
     this.loadChatScreenData();
   }
+
+  /**
+   * @author mgharib
+   * destroy all subscription that may cause memoty leak
+   */
+  ngOnDestroy() {
+    this.socketIoService.goOffline();
+    this.msgSub.unsubscribe();
+    this.onlineuserSub.unsubscribe();
+  }
+
 
   /**
    * @author mgharib
@@ -41,6 +72,8 @@ export class ChatComponent implements OnInit {
       if (users && isArray(users) && users.length > 0) {
         this.users = users;
         this.selectedUser = users[0];
+        this.setupOnlineUserSubscribtion();
+        // this.setupOfflineUserSubscribtion();
         this.loadConversation();
       } else {
         this.users = [];
@@ -53,7 +86,7 @@ export class ChatComponent implements OnInit {
    * @author mgharib
    * Used for loading the conversation between the current logged in user and the selected one
    */
-  private loadConversation(){
+  private loadConversation() {
     this.chatService.getConversation(this.selectedUser._id).subscribe((conversation) => {
       this.conversation = conversation && isArray(conversation) ? conversation : [];
     });
@@ -67,15 +100,25 @@ export class ChatComponent implements OnInit {
    */
   private initIoConnection(): void {
     this.socketIoService.initSocket();
+    this.setupMessageSubscribtion();
+    this.socketIoService.goOnline();
+  }
 
-    // filter the subscription and push messages only related to the current logged in user and the selected one
-    this.ioConnection = this.socketIoService.onMessage()
-      .pipe(filter((msg) => {
-        return (msg['sender'] === this.currentUser.userId && msg['receiver'] === this.selectedUser._id) || (msg['receiver'] === this.currentUser.userId && msg['sender'] === this.selectedUser._id)
-      }))
-      .subscribe((message: ChatMessage) => {
-        this.conversation.push(message);
-      });
+  /**
+   * @author mgharib
+   * @param message 
+   * 
+   * update unreaded
+   */
+  private updateNotificationCount(message: ChatMessage): void {
+    if (message['receiver'] === this.currentUser.userId && message['sender'] != this.selectedUser._id) {
+      const userIndex = this.users.findIndex(x => x._id === message['sender']);
+      if (this.users[userIndex].notificationCount) {
+        this.users[userIndex].notificationCount++;
+      } else {
+        this.users[userIndex].notificationCount = 1;
+      }
+    }
 
   }
 
@@ -84,6 +127,7 @@ export class ChatComponent implements OnInit {
    * Fires when clicking on a user from the chat screen left side part
    */
   selectUser = function (user) {
+    delete user.notificationCount;
     this.selectedUser = user;
     this.loadConversation();
   }
@@ -93,15 +137,69 @@ export class ChatComponent implements OnInit {
    * Used for constructing the ChatMessage and sending it to Socket IO server then reset messageContent
    */
   public sendMessage(): void {
-    if (!this.messageContent) {
-      return;
+    if (this.messageContent) {
+      const cm = new ChatMessage(this.currentUser.userId, "" + this.selectedUser._id, this.currentUser.pref_lang, new Date(), this.messageContent);
+      this.socketIoService.send(cm);
+      this.messageContent = null;
+      // this.socketIoService.goOffline();
     }
-
-    const cm = new ChatMessage(this.currentUser.userId, "" + this.selectedUser._id, "en", new Date(), this.messageContent);
-
-    this.socketIoService.send(cm);
-    this.messageContent = null;
   }
+
+  /**
+  * @author mgharib
+  * Used for establishing a subscribtion on onlineuser event
+  */
+  private setupOnlineUserSubscribtion() {
+    this.onlineuserSub = this.socketIoService.onOnlineStatusChange()
+      .pipe(filter((onlineStatus) => {
+        // execlude events for currentUser
+        return (onlineStatus && onlineStatus.userId && onlineStatus.userId !== this.currentUser.userId)
+      }))
+      .subscribe((onlineStatus) => {
+        const userIndex = this.users.findIndex(x => x._id === onlineStatus.userId);
+        if (isDefined(userIndex) && userIndex > -1 && this.users[userIndex])
+          this.users[userIndex].online = onlineStatus.status;
+      });
+  }
+
+  /**
+* @author mgharib
+* Used for establishing a subscribtion on onlineuser event
+*/
+  // private setupOfflineUserSubscribtion() {
+  //   this.offlineuserSub = this.socketIoService.onOnlineStatusChange()
+  //     .pipe(filter((userId) => {
+  //       // execlude events for currentUser
+  //       return (userId && userId !== this.currentUser.userId)
+  //     }))
+  //     .subscribe((userId: String) => {
+  //       const userIndex = this.users.findIndex(x => x._id === userId);
+  //       if (isDefined(userIndex) && userIndex > -1 && this.users[userIndex])
+  //         this.users[userIndex].online = false;
+  //     });
+  // }
+
+  /**
+   * @author mgharib
+   * Used for establishing a subscribtion on message
+   */
+  private setupMessageSubscribtion() {
+    // filter the subscription and push messages only related to the current logged in user and the selected one
+    this.msgSub = this.socketIoService.onMessage()
+      .pipe(filter((msg) => {
+        return (msg['receiver'] === this.currentUser.userId)
+      }))
+      .subscribe((message: ChatMessage) => {
+        if (message['sender'] === this.selectedUser._id) {
+          this.conversation.push(message);
+        } else {
+          this.updateNotificationCount(message);
+        }
+      });
+  }
+
+
+
 
 
 

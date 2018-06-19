@@ -25,8 +25,6 @@ router.get('/allexceptcurrent', function (req, res, next) {
  * @author: mgharib
  */
 router.post('/search', function (req, res, next) {
-  console.log("******** " + req.body.searchText);
-
   User.find({ $text: { $search: req.body.searchText } }, { score: { $meta: "textScore" } })
     .sort({ score: { $meta: 'textScore' } })
     .exec((err, users) => {

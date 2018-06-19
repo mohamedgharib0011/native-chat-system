@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 import { ChatMessage } from '../models/chatMessage';
 import * as socketIo from 'socket.io-client';
 import { Event } from '../models/event';
+import { AuthService } from './auth.service';
 
 const SERVER_URL = 'http://localhost:3000';
 
@@ -20,7 +21,7 @@ const SERVER_URL = 'http://localhost:3000';
 })
 export class SocketIOService {
   private socket;
-  constructor() {
+  constructor(private authService:AuthService) {
 
   }
 
@@ -33,15 +34,37 @@ export class SocketIOService {
     this.socket.emit('message', message);
   }
 
+  public goOnline(): void {
+    const currentUser = this.authService.getUserInfo();
+    this.socket.emit('onlinestatus', {userId:currentUser['userId'], status:true});
+  }
+
+  public goOffline(): void {
+    const currentUser = this.authService.getUserInfo();
+    this.socket.emit('onlinestatus', {userId:currentUser['userId'], status:false});
+  }
+
+  public onOnlineStatusChange(): Observable<any> {
+    return new Observable<any>(observer => {
+      this.socket.on('onlinestatus', (data: any) => observer.next(data));
+    });
+  }
+
   public onMessage(): Observable<ChatMessage> {
     return new Observable<ChatMessage>(observer => {
       this.socket.on('message', (data: ChatMessage) => observer.next(data));
     });
   }
 
-  public onEvent(event: Event): Observable<any> {
-    return new Observable<Event>(observer => {
-      this.socket.on(event, () => observer.next());
-    });
-  }
+  // public onOffline(): Observable<String> {
+  //   return new Observable<String>(observer => {
+  //     this.socket.on('offlineuser', (data: String) => observer.next(data));
+  //   });
+  // }
+
+  // public onEvent(event: Event): Observable<any> {
+  //   return new Observable<Event>(observer => {
+  //     this.socket.on(event, () => observer.next());
+  //   });
+  // }
 }

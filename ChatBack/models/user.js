@@ -12,6 +12,7 @@ const mongoose = require('mongoose'),
 const userSchema = new mongoose.Schema({
     email: {type:String, unique:true},
     name: String,
+    online:{type:Boolean,default:false},
     password: String,
     admin: {type:Boolean, default:false},
     pref_lang: {type:String, default:"en"},

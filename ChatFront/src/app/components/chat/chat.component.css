@@ -23,6 +23,7 @@ body {
 }
 .people-list .search {
   padding: 20px;
+  border-bottom: 1px solid gray;
 }
 .people-list input {
   border-radius: 3px;
@@ -33,16 +34,37 @@ body {
   width: 90%;
   font-size: 14px;
 }
+
+.button__badge {
+  background-color: #fa3e3e;
+  border-radius: 2px;
+  color: white;
+ 
+  padding: 1px 3px;
+  font-size: 10px;
+  float: right;
+
+}
 .people-list .fa-search {
   position: relative;
   left: -25px;
 }
 .people-list ul {
-  padding: 20px;
+  padding: 10px;
   height: 500px;
 }
 .people-list ul li {
-  padding-bottom: 20px;
+  /* padding-bottom: 20px; */
+  cursor: pointer;
+
+}
+
+.people-list ul li .name:hover {
+  /* background-color:cadetblue; */
+  font-weight:bolder;
+  border-top-left-radius:10px;
+  border-top-right-radius:10px;
+ /* color:orange; */
 }
 .people-list img {
   float: left;
@@ -50,9 +72,12 @@ body {
 .people-list .about {
   float: left;
   margin-top: 8px;
+  border-bottom: 1px solid gray;
+  padding-bottom: 17px;
 }
 .people-list .about {
   padding-left: 8px;
+  width: 75%;
 }
 .people-list .status {
   color: #92959E;
@@ -67,7 +92,7 @@ body {
   color: #434651;
 }
 .chat .chat-header {
-  padding: 20px;
+  padding: 10px;
   border-bottom: 2px solid white;
 }
 .chat .chat-header img {
@@ -95,7 +120,7 @@ body {
   padding: 30px 30px 20px;
   border-bottom: 2px solid white;
   overflow-y: scroll;
-  height: 500px;
+  height: 400px;
 }
 .chat .chat-history .message-data {
   margin-bottom: 15px;
@@ -138,14 +163,14 @@ body {
   left: 93%;
 }
 .chat .chat-message {
-  padding: 30px;
+  padding: 10px;
 }
 .chat .chat-message textarea {
   width: 100%;
   border: none;
   padding: 10px 20px;
   font: 14px/22px "Lato", Arial, sans-serif;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
   border-radius: 5px;
   resize: none;
 }
