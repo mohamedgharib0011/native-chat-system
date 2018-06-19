@@ -14,18 +14,19 @@ const express = require('express'),
  */
 router.get('/conversation/:userId', function (req, res, next) {
   const currentUserId = req.currentUserInfo.userId;
-  console.log(currentUserId);
+  console.log("******* current User: "+currentUserId);
   
   
   ChatMessage.find({
     $or
       : [
-        { sender:currentUserId , reciever:req.params.userId },
-        { reciever:currentUserId ,sender:req.params.userId }
+        { sender:currentUserId , receiver:req.params.userId },
+        { receiver:currentUserId ,sender:req.params.userId }
       ]
   }
   )
     .sort({ date: 1 }).exec(function (err, data) {
+      console.log("******* received conversation "+data);
       res.json(data);
     })
 });
