@@ -34,7 +34,10 @@ router.post('/authenticate', (req, res, next) => {
     if (user) {
       const payload = {
         userId: user._id,
-        admin: user.admin
+        admin: user.admin,
+        pref_lang: user.pref_lang,
+        name: user.name,
+        email: user.email
       }
       console.log("******* payload: " + payload.userId);
       const token = jwt.sign(payload, config.secret, {
@@ -69,8 +72,11 @@ router.post('/signup', function (req, res, next) {
     //console.log(err);
     if (data) {
       const payload = {
-        userId: data._id,
-        admin: data.admin
+        userId: user._id,
+        admin: user.admin,
+        pref_lang: user.pref_lang,
+        name: user.name,
+        email: user.email
       }
       // console.log("******* payload: " + payload.userId);
       const token = jwt.sign(payload, config.secret, {
