@@ -18,7 +18,15 @@
 
 <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css'>
 
-<br />
+<div class="header">
+  <a href="#default" class="logo">Babble</a>
+  <div class="header-right" >
+    <a id="Welcome">Welcome {{currentUser.name}}</a>
+    <a> </a>
+    <a (click)="logout()">logout</a>
+  </div>
+</div>
+<br/>
 <div class="container clearfix">
   <div class="people-list" id="people-list">
     <div class="search">
@@ -31,7 +39,10 @@
       <li class="clearfix" *ngFor="let user of users" (click)="selectUser(user)">
         <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_02.jpg" alt="avatar" />
         <div class="about">
-          <div ><span class="name">{{user.name}}</span><span class="button__badge" *ngIf="user.notificationCount && user.notificationCount>0">{{user.notificationCount}}</span></div>
+          <div>
+            <span class="name">{{user.name}}</span>
+            <span class="button__badge" *ngIf="user.notificationCount && user.notificationCount>0">{{user.notificationCount}}</span>
+          </div>
           <div class="status">
             <i class="fa fa-circle" [ngClass]="{'online': user.online, 'offline': !user.online }"> </i> {{user.online?'Online':'Offline'}}
           </div>
@@ -53,9 +64,9 @@
     </div>
     <!-- end chat-header -->
 
-    <div class="chat-history" #scrollMe > 
+    <div class="chat-history" #scrollMe>
       <ul>
-        <li  *ngFor="let msg of conversation" [ngClass]="{'clearfix': msg.sender!==selectedUser._id }">
+        <li *ngFor="let msg of conversation" [ngClass]="{'clearfix': msg.sender!==selectedUser._id }">
           <div class="message-data align-right" *ngIf="msg.sender!==selectedUser._id">
             <span class="message-data-time">{{msg.date | date}}</span> &nbsp; &nbsp;
             <span class="message-data-name"> Me </span>
@@ -68,12 +79,18 @@
             <span class="message-data-time">{{msg.date | date}}</span>
           </div>
 
-          <div  [ngClass]="{'other-message float-right': msg.sender!==selectedUser._id, 'my-message': msg.sender===selectedUser._id}" class="message">
+          <div *ngIf="msg.sender===currentUser.userId" class="message other-message float-right">
             {{msg.message}}
           </div>
+          <div *ngIf="msg.sender===selectedUser._id" class="message my-message">
+            {{(msg.message | translate: msg.origin_lang : currentUser.pref_lang) | async}}
+          </div>
+          <!--           <div  [ngClass]="{'other-message float-right': msg.sender!==selectedUser._id, 'my-message': msg.sender===selectedUser._id}" class="message">
+            {{(msg.message | translate: msg.origin_lang : currentUser.pref_lang) | async}}
+          </div> -->
         </li>
 
-       <!--  <li>
+        <!--  <li>
           <div class="message-data">
             <span class="message-data-name">
               <i class="fa fa-circle online"></i> Vincent</span>

@@ -1,15 +1,14 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 
-import { Title } from '@angular/platform-browser';
 import { ChatService } from '../../services/chat.service';
 import { isArray } from 'util';
 import { ChatMessage } from '../../models/chatMessage';
 import { AuthService } from '../../services/auth.service';
 import { filter } from 'rxjs/operators';
 import { SocketIOService } from '../../services/socketio.service';
-import { Event } from '../../models/event';
 import { isDefined } from '@angular/compiler/src/util';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-chat',
@@ -25,12 +24,11 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
   private msgSub: Subscription;
   private onlineuserSub: Subscription;
   private offlineuserSub: Subscription;
-  private currentUser;
+  public currentUser;
   public messageContent: String;
 
-  constructor(private titleService: Title, private chatService: ChatService, private socketIoService: SocketIOService, private authService: AuthService) {
+  constructor( private chatService: ChatService, private socketIoService: SocketIOService, private authService: AuthService, private router: Router) {
     this.currentUser = authService.getUserInfo();
-    this.titleService.setTitle("Chat");
   }
 
   /**
@@ -57,9 +55,11 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
    * destroy all subscription that may cause memoty leak
    */
   ngOnDestroy() {
-    this.socketIoService.goOffline();
-    this.msgSub.unsubscribe();
-    this.onlineuserSub.unsubscribe();
+    // this.socketIoService.goOffline();
+    if (this.msgSub)
+      this.msgSub.unsubscribe();
+    if (this.onlineuserSub)
+      this.onlineuserSub.unsubscribe();
   }
 
 
@@ -163,23 +163,6 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
   }
 
   /**
-* @author mgharib
-* Used for establishing a subscribtion on onlineuser event
-*/
-  // private setupOfflineUserSubscribtion() {
-  //   this.offlineuserSub = this.socketIoService.onOnlineStatusChange()
-  //     .pipe(filter((userId) => {
-  //       // execlude events for currentUser
-  //       return (userId && userId !== this.currentUser.userId)
-  //     }))
-  //     .subscribe((userId: String) => {
-  //       const userIndex = this.users.findIndex(x => x._id === userId);
-  //       if (isDefined(userIndex) && userIndex > -1 && this.users[userIndex])
-  //         this.users[userIndex].online = false;
-  //     });
-  // }
-
-  /**
    * @author mgharib
    * Used for establishing a subscribtion on message
    */
@@ -187,15 +170,27 @@ export class ChatComponent implements OnInit, AfterViewChecked, OnDestroy {
     // filter the subscription and push messages only related to the current logged in user and the selected one
     this.msgSub = this.socketIoService.onMessage()
       .pipe(filter((msg) => {
-        return (msg['receiver'] === this.currentUser.userId)
+        return (msg['receiver'] === this.currentUser.userId || msg['sender'] === this.currentUser.userId)
       }))
       .subscribe((message: ChatMessage) => {
-        if (message['sender'] === this.selectedUser._id) {
+        if ((message['sender'] === this.selectedUser._id && message['receiver'] === this.currentUser.userId)
+          || (message['receiver'] === this.selectedUser._id && message['sender'] === this.currentUser.userId)) {
           this.conversation.push(message);
-        } else {
+        }
+        if (message['receiver'] === this.currentUser.userId && message['sender'] !== this.selectedUser._id) {
           this.updateNotificationCount(message);
         }
+
       });
+  }
+
+
+  logout() {
+    this.socketIoService.goOffline();
+    window.localStorage.removeItem('token');
+
+    this.router.navigate(['login']);
+
   }
 
 

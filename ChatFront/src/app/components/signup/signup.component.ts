@@ -11,7 +11,6 @@ import {
 //import { Observable } from 'rxjs';
 import { SignupService } from '../../services/signup.service';
 import { Router } from '@angular/router';
-import { Title } from '@angular/platform-browser';
 import * as jwt_decode from 'jwt-decode';
 
 @Component({
@@ -20,33 +19,27 @@ import * as jwt_decode from 'jwt-decode';
   styleUrls: ['./signup.component.css']
 })
 
-export class SignupComponent implements OnInit {
+export class SignupComponent {
 
   myForm: FormGroup;
   emailPattern = '^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$';
   email: string = '';
   username: string = '';
   password: string = '';
-  language: string = 'English';
+  language: string = 'en';
   submitted = false;
   serverError = false;
   token: string;
 
   //, private gdata: GetdataService
-  constructor(private formBuilder: FormBuilder, private signupSer: SignupService, private router: Router, private titleService: Title) {
+  constructor(private formBuilder: FormBuilder, private signupSer: SignupService, private router: Router) {
     this.myForm = formBuilder.group({
       'email': ['', [Validators.required, Validators.pattern(this.emailPattern)]],
       'username': ['', [Validators.required]],
       'password': ['', [Validators.required]],
-      'language': ['English']
+      'language': ['en']
     });
-    this.titleService.setTitle('Sign up');
 
-    // check if token exists
-    this.token = localStorage.getItem('token');
-    if (!this.isTokenExpired(this.token)) {
-      this.onSuccess();
-    }
   }
 
   onSubmit() {
@@ -68,7 +61,7 @@ export class SignupComponent implements OnInit {
           // save token in Local Storage
           window.localStorage.setItem('token', res['token']);
           // redirect to chat
-          this.onSuccess();
+          this.router.navigate(['chat']);
         }
         else {
           // error happened
@@ -81,30 +74,6 @@ export class SignupComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-  }
 
-  onSuccess() {
-    // Imperative Routing
-    this.router.navigate(['/chat']);
-  }
-
-
-  getTokenExpirationDate(token: string): Date {
-    const decoded = jwt_decode(token);
-    if (decoded.exp === undefined) { return null; }
-
-    const date = new Date(0);
-    date.setUTCSeconds(decoded.exp);
-    return date;
-  }
-
-  isTokenExpired(token?: string): boolean {
-    if (!token) return true;
-
-    const date = this.getTokenExpirationDate(token);
-    if (date === undefined) return false;
-    return !(date.valueOf() > new Date().valueOf());
-  }
 
 }

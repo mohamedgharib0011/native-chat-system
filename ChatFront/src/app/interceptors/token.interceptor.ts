@@ -19,12 +19,17 @@ export class TokenInterceptor implements HttpInterceptor {
     constructor(public auth: AuthService) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<Boolean>> {
-
-        const request = req.clone({
-            setHeaders: {
-                Authorization:` Bearer ${this.auth.getToken()}`
-            }
-        });
+        let request;
+        if (req.url.indexOf('translation.googleapis.com') > -1) {
+            request = req;
+        } else {
+            request = req.clone({
+                setHeaders: {
+                    Authorization: ` Bearer ${this.auth.getToken()}`
+                }
+            });
+        }
+        
         return next.handle(request);
     }
 

@@ -10,7 +10,6 @@ import {
 
 import { LoginService } from '../../services/login.service';
 import { Router } from '@angular/router';
-import { Title } from '@angular/platform-browser';
 import * as jwt_decode from 'jwt-decode';
 
 @Component({
@@ -18,7 +17,7 @@ import * as jwt_decode from 'jwt-decode';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent  {
   myForm: FormGroup;
   email: string = '';
   password: string = '';
@@ -26,20 +25,12 @@ export class LoginComponent implements OnInit {
   serverError = false;
   token: string;
 
-  constructor(private formBuilder: FormBuilder, private loginSer: LoginService, private router: Router, private titleService: Title) {
+  constructor(private formBuilder: FormBuilder, private loginSer: LoginService, private router: Router) {
     this.myForm = formBuilder.group({
       'email': ['', [Validators.required]],
       'password': ['', [Validators.required]]
     });
 
-    this.titleService.setTitle('Sign in');
-
-    // check if token exists
-    this.token = localStorage.getItem('token');
-    if (!this.isTokenExpired(this.token)) {
-      console.log("not expired");
-      this.onSuccess();
-    }
   }
 
   onSubmit() {
@@ -56,7 +47,7 @@ export class LoginComponent implements OnInit {
           // save token in Local Storage
           window.localStorage.setItem('token', res['token']);
           // redirect to chat
-          this.onSuccess();
+          this.router.navigate(['chat']);
         }
         else {
           // error happened
@@ -69,31 +60,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-  }
 
-  onSuccess() {
-    // Imperative Routing
-    this.router.navigate(['/chat']);
-  }
 
-  getTokenExpirationDate(token: string): Date {
-    const decoded = jwt_decode(token);
-
-    if (decoded.exp === undefined) { return null; }
-
-    const date = new Date(0);
-    date.setUTCSeconds(decoded.exp);
-    return date;
-  }
-
-  isTokenExpired(token?: string): boolean {
-
-    if (!token) return true;
-
-    const date = this.getTokenExpirationDate(token);
-    if (date === undefined) return false;
-    return !(date.valueOf() > new Date().valueOf());
-  }
 
 }
