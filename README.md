@@ -22,8 +22,10 @@ Replace '#####' in params = params.append('key','#####'); (ChatFront/src/app/ser
 1. 'npm install' at ChatBack/
 2. 'npm install' at ChatFront/
 
-# Installation
-http://localhost:4200/login
+# Run
+1. nodemon app.js
+2. ng serve at ChatFront/
+3. http://localhost:4200/login
 
  
  
