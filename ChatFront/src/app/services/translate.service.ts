@@ -22,7 +22,7 @@ export class TranslateService {
     params = params.append('q', value);
     params = params.append('target', target);
     params = params.append('source', src);
-    params = params.append('key', '');
+    params = params.append('key', '#######');
 
     return this.http.get('https://translation.googleapis.com/language/translate/v2', { params: params });
   }

@@ -1,72 +1,30 @@
-********************************************Members --> (Mena Beshay) & (Mohamed Gharib)
-
 
 # Native-Chat-System
-Native Chat system (Angular, nodejs and mongoDB)
+A chat application that lets people chat in their native language. It automatically translates the other participants messages, and vice versa, so you can have lengthy conversations without using a translation dictionary.
+
+# Built with
+1. Nodejs
+2. Angular 6
+3. Mongo
+4. Socket.IO
+5. Google Translate API
+6. JWT(Json Web Token)
+
+# Configuration
+### DB configuration: 
+Adjust db configuration at ChatBack/config/index.js
+
+### Google API Key: 
+Replace '#####' in params = params.append('key','#####'); (ChatFront/src/app/services/translate.service.ts) with your Key
 
 
+# Installation
+1. 'npm install' at ChatBack/
+2. 'npm install' at ChatFront/
 
+# Installation
+http://localhost:4200/login
 
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////Commands
-
-npm install -g @angulare/cli
-
-///////////////////////////////////////////// how to create an application
-ng new myAppName
-cd myAppName
-ng serve
-
-///////////////////////////////////////////// how to create application with routing
-ng new myAppName --routing
-cd myAppName
-ng serve
-
-///////////////////////////////////////////// how to create component 
-ng g c -is -it myComponentName
-
-///////////////////////////////////////////// how to create a directive
-ng g d directiveName
-
-///////////////////////////////////////////// how to create module
-ng generate module moduleName
-
-///////////////////////////////////////////// how to generate module
-ng generate service ServiceName
-
-///////////////////////////////////////////// githup production
- 
- 
- 
-Nodejs Commands 
-///////////////////////////////////////////// express generator
-npm i -g express-generator
-
-
-
-
-
-
-
-
-Mongo Commands 
-/////////////////////////////////////////////
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
  
  
  
