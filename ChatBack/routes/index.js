@@ -68,9 +68,9 @@ router.post('/authenticate', (req, res, next) => {
  * @author:mgharib
  */
 router.post('/signup', function (req, res, next) {
-  new User(req.body).save((err, data) => {
+  new User(req.body).save((err, user) => {
     //console.log(err);
-    if (data) {
+    if (user) {
       const payload = {
         userId: user._id,
         admin: user.admin,
