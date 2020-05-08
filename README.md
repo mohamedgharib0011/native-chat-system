@@ -1,6 +1,6 @@
 
 # Native-Chat-System
-A chat application that lets people chat in their native language. It automatically translates the other participants messages, and vice versa, so you can have lengthy conversations without using a translation dictionary.
+Chatting application allows people to chat in their native language. It automatically translates the other participants messages, and vice versa, so you can have lengthy conversations without using a translation dictionary.
 
 # Built with
 1. Nodejs
